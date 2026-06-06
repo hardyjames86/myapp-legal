@@ -12,22 +12,17 @@
 <body>
 <p>Redirecting back to app...</p>
 <script>
-  // Auth code flow: code arrives as query param (?code=xxx)
-  // Implicit flow (legacy): token arrives as hash (#access_token=xxx)
-  // Parse both independently — never use hash || search since Facebook adds #_=_
   var hashParams  = new URLSearchParams(window.location.hash.substring(1));
   var queryParams = new URLSearchParams(window.location.search.substring(1));
-
   var token = hashParams.get('access_token');
   var code  = queryParams.get('code');
   var error = queryParams.get('error') || queryParams.get('error_description') || hashParams.get('error');
-
   if (code) {
-    window.location.href = 'myapp://auth/callback?code=' + encodeURIComponent(code);
+    window.location.href = 'streetyak://auth/callback?code=' + encodeURIComponent(code);
   } else if (token) {
-    window.location.href = 'myapp://auth/callback?access_token=' + encodeURIComponent(token);
+    window.location.href = 'streetyak://auth/callback?access_token=' + encodeURIComponent(token);
   } else if (error) {
-    window.location.href = 'myapp://auth/callback?error=' + encodeURIComponent(error);
+    window.location.href = 'streetyak://auth/callback?error=' + encodeURIComponent(error);
   } else {
     document.querySelector('p').textContent = 'No token received. You can close this window.';
   }
