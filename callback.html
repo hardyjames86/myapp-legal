@@ -12,15 +12,19 @@
 <body>
 <p>Redirecting back to app...</p>
 <script>
-  // Facebook returns token in hash: #access_token=xxx&...
-  // Query string for errors: ?error=xxx
-  var hash   = window.location.hash.substring(1);
-  var search = window.location.search.substring(1);
-  var params = new URLSearchParams(hash || search);
-  var token  = params.get('access_token');
-  var error  = params.get('error') || params.get('error_description');
+  // Auth code flow: code arrives as query param (?code=xxx)
+  // Implicit flow (legacy): token arrives as hash (#access_token=xxx)
+  // Parse both independently — never use hash || search since Facebook adds #_=_
+  var hashParams  = new URLSearchParams(window.location.hash.substring(1));
+  var queryParams = new URLSearchParams(window.location.search.substring(1));
 
-  if (token) {
+  var token = hashParams.get('access_token');
+  var code  = queryParams.get('code');
+  var error = queryParams.get('error') || queryParams.get('error_description') || hashParams.get('error');
+
+  if (code) {
+    window.location.href = 'myapp://auth/callback?code=' + encodeURIComponent(code);
+  } else if (token) {
     window.location.href = 'myapp://auth/callback?access_token=' + encodeURIComponent(token);
   } else if (error) {
     window.location.href = 'myapp://auth/callback?error=' + encodeURIComponent(error);
